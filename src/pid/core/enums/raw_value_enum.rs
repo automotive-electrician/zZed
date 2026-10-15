@@ -6,4 +6,5 @@ pub enum RawValue {
     I16(i16),
     U32(u32),
     F32(f32),
+    TwoBytes([u8; 2]),
 }
