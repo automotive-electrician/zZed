@@ -1,5 +1,7 @@
+// PIDs supported [$01 - $20]
+
 use crate::pid::{
-    consts::{modes::mode_01::MODE01, pids::mode_01::PID_00},
+    consts::{modes::MODE_01, pids::mode_01::PID_00},
     core::{
         enums::{parameter_value_enum::ParameterValue, raw_value_enum::RawValue},
         errors::{paramter_value_error::ParameterValueError, raw_value_error::RawValueError},
@@ -10,26 +12,22 @@ use crate::pid::{
 
 pub struct PIDsSupported_1To32;
 impl ParamterTrait for PIDsSupported_1To32 {
-    const MODE: u8 = MODE01;
+    const MODE: u8 = MODE_01;
     const PID: u8 = PID_00;
     fn raw_value(value: &[u8]) -> Result<RawValue, RawValueError> {
-        raw_value_validation(value, 6, MODE01, PID_00)?;
-        Ok(RawValue::U32(u32::from_be_bytes([
-            value[2], value[3], value[4], value[5],
-        ])))
+        raw_value_validation(value, 6, MODE_01, PID_00)?;
+        Ok(RawValue::ForBytes([value[2], value[3], value[4], value[5]]))
     }
     fn parameter_value(value: RawValue) -> Result<ParameterValue, ParameterValueError> {
         let raw = match value {
-            RawValue::U32(x) => x,
+            RawValue::ForBytes(x) => x,
             _ => return Err(ParameterValueError::InvalidData("")),
         };
 
-        let bytes = raw.to_be_bytes();
-
-        let a = bytes[0];
-        let b = bytes[1];
-        let c = bytes[2];
-        let d = bytes[3];
+        let a = raw[0];
+        let b = raw[1];
+        let c = raw[2];
+        let d = raw[3];
 
         let supported = [
             a & 0x80 != 0, // PID 01
@@ -67,5 +65,22 @@ impl ParamterTrait for PIDsSupported_1To32 {
         ];
 
         Ok(ParameterValue::PidsSupported(supported))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test() {
+        let data = [0x41, 0x00, 0xBE, 0x80, 0xAA, 0x12];
+
+        let raw = PIDsSupported_1To32::raw_value(&data).unwrap();
+        println!("Raw: {:?}", raw);
+
+        let parameter = PIDsSupported_1To32::parameter_value(raw).unwrap();
+        println!("Parameter: {:?}", parameter)
     }
 }

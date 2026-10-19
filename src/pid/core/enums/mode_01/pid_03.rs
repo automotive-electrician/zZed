@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FuelSystemStatus {
+pub enum FuelSystemStatusEnum {
     MotorOff,
     OpenLoopInsufficientTemperature,
     ClosedLoop,

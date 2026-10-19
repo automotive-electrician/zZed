@@ -7,4 +7,5 @@ pub enum RawValue {
     U32(u32),
     F32(f32),
     TwoBytes([u8; 2]),
+    ForBytes([u8; 4]),
 }
