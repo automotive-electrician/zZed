@@ -2,7 +2,7 @@
 pub const PERCENTAGE: &str = "%";
 
 // Temperature
-pub const CELSIUS: &str = "°C";
+pub const CELSIUS: Option<&'static str> = Some("°C");
 
 // Pressure
 pub const KILOPASCAL: &str = "kPa";
